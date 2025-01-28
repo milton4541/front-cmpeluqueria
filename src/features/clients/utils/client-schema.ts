@@ -23,8 +23,7 @@ const appointmentSchema = z.object({
     message: z.string(),
     status: z.string(),
   });
-  
-  // Exportamos los tipos derivados del esquema
+
   export type ApiResponse = z.infer<typeof apiResponseSchema>;
   export type Client = z.infer<typeof clientSchema>;
   export type Appointment = z.infer<typeof appointmentSchema>;

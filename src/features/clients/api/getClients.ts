@@ -2,7 +2,7 @@ import axios from 'axios';
 import { ApiResponse, apiResponseSchema } from '../utils/client-schema';
 import { z } from 'zod';
 
-const API_URL = 'http://localhost:8080/cliente';
+const API_URL = '/api/v1/cliente';
 
 export const getClients = async (): Promise<ApiResponse["data"]> => {
     try {

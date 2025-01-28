@@ -1,14 +1,12 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from '@mui/material';
 import { FaUserPlus } from 'react-icons/fa';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import useClients from '../hooks/useClients';
 
 export default function ClientList() {
-  const data = [
-    { id: 1, nombre: 'Juan', apellido: 'Pérez', email: 'juan@example.com', telefono: '123456789' },
-    { id: 2, nombre: 'María', apellido: 'González', email: 'maria@example.com', telefono: '987654321' },
-    { id: 3, nombre: 'Luis', apellido: 'Rodríguez', email: 'luis@example.com', telefono: '564738291' },
-  ];
 
+ const {clients} = useClients()
+ 
   const handleEdit = (id: number) => {
     console.log(`Editando el cliente con id: ${id}`);
     // Lógica para editar
@@ -50,13 +48,13 @@ export default function ClientList() {
   </TableRow>
 </TableHead>
           <TableBody className='text-center'>
-            {data.map((row) => (
+            {clients.map((row) => (
               <TableRow key={row.id}>
                 <TableCell>{row.id}</TableCell>
-                <TableCell>{row.nombre}</TableCell>
-                <TableCell>{row.apellido}</TableCell>
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{row.last_name}</TableCell>
                 <TableCell>{row.email}</TableCell>
-                <TableCell>{row.telefono}</TableCell>
+                <TableCell>{row.phone}</TableCell>
                 <TableCell>
                 <IconButton 
                     onClick={() => handleEdit(row.id)} 

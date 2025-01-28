@@ -3,10 +3,12 @@ import Home from "./views/pages";
 import Layout from "./layouts/layout";
 import Clientes from "./views/clientes";
 import Login from "./views/login";
+import Notification from "./components/notification";
 
 export default function AppRouter() {
     return (
         <BrowserRouter>
+            <Notification />
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route element={<Layout />}>
