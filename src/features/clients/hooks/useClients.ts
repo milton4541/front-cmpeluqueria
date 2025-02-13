@@ -1,52 +1,70 @@
 import { useState, useEffect } from "react";
 import { getClients } from "../api/getClients";
-import { apiResponseSchema, Client } from "../utils/client-schema";
+import { Client } from "../utils/client-schema";
 import { newClientRead } from "../api/newClient";
-import { apiNewClientResponse, newClient } from "../utils/newClient-schema";
-
+import { newClient } from "../utils/newClient-schema";
+import { showNotification } from '../../../components/notification';
+import { Client as clients, ClientWithId } from "../types/client";
+import { deleteClientAPI } from "../api/deleteClient";
+import { editClientAPI } from "../api/editClient";
 export type ClientsSliceType = {
     clients: Client
     addClient: newClient
+    fetchClients: () => void
+    deleteClient: (id: number) => void
+    editClient: (client: ClientWithId) => void
 }
 
 export default function useClients() {
     const [clients, setClients] = useState<Client[]>([]);
+        
+    const fetchClients = async () => {
+        // Llama a la API para obtener los clientes
+        const clients = await getClients(); 
+        setClients(clients); 
+    };
     
     useEffect(() => {
-        const fetchClients = async () => {
-        try {
-            const clients = await getClients();
-            const validateResponse = apiResponseSchema.parse(clients)
-            setClients(validateResponse.data);
-        } catch (error) {
-            console.error("Error al obtener los clientes");
-        }
-        };
-    
         fetchClients();
     }, []);
-    
-    
 
-    const addClient = async () => { 
-            try {
-                const addClient = await newClientRead();
-                const validateResponse = apiNewClientResponse.parse(addClient)
-                if (validateResponse.status === "ok") {
-                    const newClients = validateResponse.data.map(client => ({
-                        ...client,
-                        id: Date.now(), // Generar un ID temporal (o usar un valor por defecto)
-                        appointments: [], // Agregar un array vacío de appointments
-                    }));
-                
-                    setClients([...clients, ...newClients]);
-                    await getClients();
-                }
-            } catch (error) {
-                console.error("Error al obtener los clientes");
-            }
-
+    const addClient = async (client: clients) => { 
+        try{
+        // Llama a la API para crear el cliente
+        await newClientRead(client); 
+        showNotification('success','Cliente creado correctamente');
+        await fetchClients(); //refresca datos
+        } catch (error) {
+            const errorMessage = (error as Error).message || 'Ocurrió un error desconocido';
+            showNotification('error', errorMessage);
+        }
     }
 
-    return { clients, addClient };
+    const deleteClient = async (id: number) => {
+        try {
+            // Llama a la API para eliminar el cliente
+            await deleteClientAPI(id);
+            showNotification('success','Cliente eliminado correctamente');
+            await fetchClients(); //refresca datos
+        } catch (error) {
+            const errorMessage = (error as Error).message || 'Ocurrió un error desconocido';
+            showNotification('error', errorMessage);
+        }
+    }
+
+    const editClient = async (client: ClientWithId) => {
+        try {
+            await editClientAPI(client);
+            showNotification('success','Cliente editado correctamente');
+            await fetchClients(); //refresca datos
+            console.log("refresca datos")
+        } catch (error) {
+            const errorMessage = (error as Error).message || 'Ocurrió un error desconocido';
+            showNotification('error', errorMessage);
+        }    
+    }
+
+
+
+    return { clients, addClient, deleteClient, editClient };
 }

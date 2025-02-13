@@ -2,25 +2,39 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { FaUserPlus } from 'react-icons/fa';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import useClients from '../hooks/useClients';
+import Modal from '../../../components/modal';
+import { useState } from 'react';
+import ClientForm from './modalAddClient';
+import { Client, ClientWithId } from '../types/client';
+import ConfirmAction from '../../../components/confirmAction';
+import ClientEditForm from './modalEditClient';
+
 
 export default function ClientList() {
 
- const {clients} = useClients()
+ const {clients, addClient, deleteClient,editClient} = useClients()
+ const [isOpen, setIsOpen] = useState(false);  //para abrir modal de agregar cliente
+ const [isOpenDelete, setIsOpenDelete] = useState(false); //para abrir modal de eliminar cliente
+ const [isOpenEdit, setIsOpenEdit] = useState(false); //para abrir modal de editar cliente
  
-  const handleEdit = (id: number) => {
-    console.log(`Editando el cliente con id: ${id}`);
-    // Lógica para editar
+  const handleEdit = (client: ClientWithId) => {
+    console.log(`Editando el cliente con id: ${client.id}`);
+    editClient(client);
+    setIsOpenEdit(false);
   };
 
   const handleDelete = (id: number) => {
     console.log(`Eliminando el cliente con id: ${id}`);
-    // Lógica para eliminar
+    deleteClient(id);    
+    setIsOpenDelete(false); 
+
   };
 
-  const agregarCliente = () => {
-    console.log('Agregando un cliente');
-    // Lógica para agregar un cliente
-  };
+  const handleAddClient =  (client: Client) => {
+      addClient(client); // Llama a tu API o slice de Redux
+      setIsOpen(false); // Cierra el modal
+};
+
 
   return (
     
@@ -28,17 +42,20 @@ export default function ClientList() {
     <div className="container mx-auto p-4">
         <h2 className="text-2xl font-bold mb-4">Lista de Clientes</h2>
         <button
-  onClick={agregarCliente}
+  onClick={() => setIsOpen(true)}
   className="bg-gray-500 hover:bg-gray-700 text-black font-bold py-2 px-4 rounded flex items-center gap-2 mb-6"
 >
   Agregar Cliente <FaUserPlus />
 </button>
+            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                <ClientForm onSubmit={handleAddClient} />
+            </Modal>
 
       <TableContainer component={Paper}>
-        <Table>
+        <Table> 
         <TableHead className="text-center uppercase">
   <TableRow>
-    <TableCell sx={{ fontWeight: 'bold' }}>ID</TableCell>
+    <TableCell sx={{ fontWeight: 'bold' }}>Codigo</TableCell>
     <TableCell sx={{ fontWeight: 'bold' }}>Nombre</TableCell>
     <TableCell sx={{ fontWeight: 'bold' }}>Apellido</TableCell>
     <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
@@ -55,24 +72,38 @@ export default function ClientList() {
                 <TableCell>{row.last_name}</TableCell>
                 <TableCell>{row.email}</TableCell>
                 <TableCell>{row.phone}</TableCell>
-                <TableCell>
-                <IconButton 
-                    onClick={() => handleEdit(row.id)} 
-                    className="text-blue-500 hover:text-blue-700 transition-all"
-                    >
-                <FaEdit />
-                </IconButton>
 
+                <TableCell>
+                  <IconButton 
+                      onClick={() => setIsOpenEdit(true)} 
+                      className="text-blue-500 hover:text-blue-700 transition-all"
+                      >
+                  <FaEdit />
+                  </IconButton>
+                  <Modal isOpen={isOpenEdit} onClose={() => setIsOpenEdit(false)}>
+                  |   <ClientEditForm                                
+                                onSubmit={(updatedClient) => {
+                                    handleEdit(updatedClient);
+                                }}
+                                client={row}/>
+                  </Modal>
                 </TableCell>
 
                 <TableCell>
-
                 <IconButton 
-                onClick={() => handleDelete(row.id)} 
-                className="text-red-500 hover:text-red-700 transition-all"
+                      onClick={() => setIsOpenDelete(true)} 
+                      className="text-red-500 hover:text-red-700 transition-all"
                 >
                 <FaTrash />
                 </IconButton>
+                <Modal isOpen={isOpenDelete} onClose={() => setIsOpenDelete(false)}>
+                  |<ConfirmAction
+                        onConfirm={() => {
+                            handleDelete(row.id);
+                        }}
+                        onCancel={() => setIsOpenDelete(false)} // Cierra el modal al cancelar
+                    />                
+                  </Modal>
                 </TableCell>
               </TableRow>
             ))}

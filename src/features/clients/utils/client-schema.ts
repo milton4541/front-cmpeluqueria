@@ -9,12 +9,12 @@ const appointmentSchema = z.object({
   
   // Definimos el esquema para un cliente
   const clientSchema = z.object({
+    appointments: z.nullable(z.array(appointmentSchema)), // Lista de citas asociadas
+    email: z.string(), // Validamos que sea un email válido
     id: z.number(),
-    name: z.string(),
     last_name: z.string(),
-    email: z.string().email(), // Validamos que sea un email válido
+    name: z.string(),
     phone: z.string(), // Asumimos que el teléfono es un string
-    appointments: z.array(appointmentSchema), // Lista de citas asociadas
   });
   
   // Definimos el esquema para la respuesta completa

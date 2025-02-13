@@ -1,16 +1,15 @@
 import axios from "axios";
 import { apiNewClientResponse } from "../utils/newClient-schema";
-import { Client } from "../types/client";
+import { ClientWithId } from "../types/client";
 
-const API_URL_NEW_CLIENT = '/api/v1/cliente';
+const API_URL_EDIT_CLIENT = '/api/v1/cliente/';
 
-
-
-export const newClientRead = async (clientData: Client): Promise<apiNewClientResponse> => {
+export const editClientAPI = async (clientData: ClientWithId): Promise<apiNewClientResponse> => {
     try {
         const token = localStorage.getItem('authToken');
-        const response = await axios.post(
-            API_URL_NEW_CLIENT,
+        console.log(clientData)
+        const response = await axios.put(
+            API_URL_EDIT_CLIENT+`${clientData.id}`,
             clientData, // <-- Envía los datos al cuerpo de la solicitud
             {
                 headers: {
@@ -20,8 +19,6 @@ export const newClientRead = async (clientData: Client): Promise<apiNewClientRes
             }
         );
         console.log("Respuesta de la API:", response.data); // <-- Verifica la respuesta
-
-        // Valida la respuesta de la API
         const validatedData = apiNewClientResponse.parse(response.data);
         return validatedData;
     } catch (error) {
