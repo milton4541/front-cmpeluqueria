@@ -42,11 +42,11 @@ export default function ClientList() {
     <div className="container mx-auto p-4">
         <h2 className="text-2xl font-bold mb-4">Lista de Clientes</h2>
         <button
-  onClick={() => setIsOpen(true)}
-  className="bg-gray-500 hover:bg-gray-700 text-black font-bold py-2 px-4 rounded flex items-center gap-2 mb-6"
->
-  Agregar Cliente <FaUserPlus />
-</button>
+          onClick={() => setIsOpen(true)}
+          className="bg-gray-500 hover:bg-gray-700 text-black font-bold py-2 px-4 rounded flex items-center gap-2 mb-6"
+        >
+          Agregar Cliente <FaUserPlus />
+        </button>
             <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                 <ClientForm onSubmit={handleAddClient} />
             </Modal>

@@ -23,7 +23,9 @@ export default function Layout() {
                 <Options icon={<MdPeopleAlt size={24} color="black" />} label="Clientes" />
               </Link>
               <Options icon={<TbScissors size={24} color="black" />} label="Servicios" />
-              <Options icon={<FiBox size={24} color="black" />} label="Productos" />
+              <Link to="/productos" className="flex items-center">
+                <Options icon={<FiBox size={24} color="black" />} label="Productos" />
+              </Link>  
               <Options icon={<IoIosStats size={24} color="black" />} label="Estadísticas" />
               <Options icon={<IoIosStats size={24} color="black" />} label="Configuración" />
             </div>

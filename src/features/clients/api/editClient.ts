@@ -7,7 +7,6 @@ const API_URL_EDIT_CLIENT = '/api/v1/cliente/';
 export const editClientAPI = async (clientData: ClientWithId): Promise<apiNewClientResponse> => {
     try {
         const token = localStorage.getItem('authToken');
-        console.log(clientData)
         const response = await axios.put(
             API_URL_EDIT_CLIENT+`${clientData.id}`,
             clientData, // <-- Envía los datos al cuerpo de la solicitud
@@ -18,7 +17,6 @@ export const editClientAPI = async (clientData: ClientWithId): Promise<apiNewCli
                 }
             }
         );
-        console.log("Respuesta de la API:", response.data); // <-- Verifica la respuesta
         const validatedData = apiNewClientResponse.parse(response.data);
         return validatedData;
     } catch (error) {
