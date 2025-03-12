@@ -3,6 +3,7 @@ import { MdPeopleAlt } from "react-icons/md"; //people icon
 import { TbScissors } from "react-icons/tb"; //scissors icon
 import { FiBox } from "react-icons/fi"; //box icon
 import { IoIosStats } from "react-icons/io"; //stats icon
+import { IoIosSettings } from "react-icons/io"; // Ícono de engranaje
 import { Link } from 'react-router-dom'; 
 
 import { Outlet } from "react-router-dom"; // Importa Outlet para las rutas hijas
@@ -22,12 +23,17 @@ export default function Layout() {
               <Link to="/clientes" className="flex items-center">
                 <Options icon={<MdPeopleAlt size={24} color="black" />} label="Clientes" />
               </Link>
+              <Link to="/servicios" className="flex items-center">
               <Options icon={<TbScissors size={24} color="black" />} label="Servicios" />
+              </Link>
               <Link to="/productos" className="flex items-center">
                 <Options icon={<FiBox size={24} color="black" />} label="Productos" />
               </Link>  
               <Options icon={<IoIosStats size={24} color="black" />} label="Estadísticas" />
-              <Options icon={<IoIosStats size={24} color="black" />} label="Configuración" />
+              <Link to="/configuracion" className="flex items-center">
+              <Options icon={<IoIosSettings size={24} color="black" />} label="Configuración" />
+              </Link>  
+
             </div>
             </nav>
           </aside>

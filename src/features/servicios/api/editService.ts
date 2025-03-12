@@ -1,14 +1,15 @@
 import axios from "axios";
-import { editProduct } from "../types/product";
+import { editService } from "../types/service";
 
-const API_EDIT_PRODUCT= '/api/v1/producto/';
+const API_EDIT_SERVICE = '/api/v1/servicio/';
 
-export const editProductAPI = async (id: number, product: editProduct): Promise<void> => {
+export const editServiceAPI = async (id: number, service: editService): Promise<void> => {
     try {
         const token = localStorage.getItem('authToken');
+        console.log(service),
         await axios.put(
-            API_EDIT_PRODUCT+`${id}`,
-            product,
+            API_EDIT_SERVICE + `${id}`,
+            service,
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -17,9 +18,9 @@ export const editProductAPI = async (id: number, product: editProduct): Promise<
             }
         );
     } catch (error) {
-        console.error("Error editing product:", error);
+        console.error("Error editing service:", error);
         if (axios.isAxiosError(error)) {
-            throw new Error(error.response?.data?.message || "Failed to edit product");
+            throw new Error(error.response?.data?.message || "Failed to edit service");
         } else {
             throw new Error("An unexpected error occurred");
         }

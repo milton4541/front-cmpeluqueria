@@ -11,52 +11,59 @@ import { FaEdit, FaTrash } from 'react-icons/fa';
 import { IconButton } from '@mui/material';
 import { FaUserPlus } from 'react-icons/fa';
 import { flexRender } from "@tanstack/react-table";
-import { editProduct, newProduct, product as Product } from "../types/product";
-import useProducts from "../hooks/useProduct";
-import ProductForm from "./modalAddProduct";
+import { editService, service } from "../types/service";
+import useServices from "../hooks/useService";
+import AddServiceModal from "./addServiceModal";
 import ConfirmActionv from "../../../components/confirmActionn";
-import EditProductModal from "./modalEditProduct";
+import EditServiceModal from "./editServiceModal";
 
 
-export default function ProductTable() {
-  const columns = useMemo<ColumnDef<Product>[]>(
+
+export default function ServicesList() {
+  const columns = useMemo<ColumnDef<service>[]>(
     () => [
       {
         accessorKey: "id",
-        header: "Codigo",
+        header: "Código",
         enableSorting: true,
+      },
+      {
+        accessorKey: "description",
+        header: "Descripción",
+      },
+      {
+        accessorKey: "estimated_time_minutes",
+        header: "Tiempo estimado",
+        cell: ({ row }) => {
+          const time = convertMinutesToHoursAndMinutes(row.original.estimated_time_minutes);
+          return `${time.hours}h ${time.minutes}m`;
+        },
       },
       {
         accessorKey: "name",
         header: "Nombre",
       },
       {
-        accessorKey: "brand",
-        header: "Marca",
-      },
-      {
-        accessorKey: "quantity",
-        header: "Cantidad",
-      },
-      {
-        accessorKey: "unit",
-        header: "Unidad",
+        accessorKey: "price",
+        header: "Precio",
+        cell: ({ row }) => `$${row.original.price.toFixed(2)}`, // Formatear el precio
       },
       {
         accessorKey: "Editar",
         header: "Editar",
         cell: ({ row }) => {
-          const product = row.original;
-      
+          const service = row.original;
           return (
             <IconButton
               onClick={() => {
-                setEditProductData({
-                  id: product.id,
-                  brand: product.brand,
-                  name: product.name,
-                  unit: product.unit,
-                  low_stock_alert: 0, // Ajusta este valor si es necesario
+                const time = convertMinutesToHoursAndMinutes(service.estimated_time_minutes);
+                setEditServiceData({
+                  id: service.id,
+                  description: service.description,
+                  estimated_time_hours: time.hours,
+                  estimated_time_minutes: time.minutes,
+                  name: service.name,
+                  price: service.price,
                 });
                 setIsEditOpen(true);
               }}
@@ -73,8 +80,8 @@ export default function ProductTable() {
         cell: ({ row }) => (
           <IconButton
             onClick={() => {
-              setSelectedProductId(row.original.id); // Guarda el ID del producto
-              setIsDeleteOpen(true); // Abre el modal
+              setIsDeleteOpen(true);
+              setSelectedProductId(row.original.id);
             }}
             className="text-red-500 hover:text-red-700 transition-all"
           >
@@ -82,47 +89,34 @@ export default function ProductTable() {
           </IconButton>
         ),
       },
-      
     ],
     []
   );
-  const { products, addProduct, deleteProduct,editProduct } = useProducts();
-  const [editProductData, setEditProductData] = useState<editProduct | null>(null);
+  const convertMinutesToHoursAndMinutes = (totalMinutes: number) => {
+    const hours = Math.floor(totalMinutes / 60); // Obtener las horas
+    const minutes = totalMinutes % 60; // Obtener los minutos restantes
+    return { hours, minutes };
+  };
+  const {services, addService, deleteService,editService} = useServices();
   const [globalFilter, setGlobalFilter] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editServiceData, setEditServiceData] = useState<editService | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
+
   const table = useReactTable({
-    data: products,
+    data: services, // servicios
     columns,
     state: {
-        globalFilter, // Pasar el filtro global
-      },
-      onGlobalFilterChange: setGlobalFilter,
+      globalFilter,
+    },
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
-  const [isOpen, setIsOpen] = useState(false);  //para abrir modal de agregar cliente
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false); //para abrir modal de editar cliente
-  const [isEditOpen, setIsEditOpen] = useState(false); //para abrir modal de eliminar cliente
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null); //id para editar o eliminar
-
-  
-  const handleAddProduct =  (product: newProduct) => {
-        addProduct(product); // Llama a tu API o slice de Redux
-        setIsOpen(false); // Cierra el modal
-  };
-
-  const handleDelete = (id: number) => {
-    console.log(`Eliminando el producto con id: ${id}`);
-    deleteProduct(id);    
-    setIsDeleteOpen(false);
-  }
-
-  const handleEdit = (product: editProduct) => {
-    setEditProductData(product);
-    editProduct(product);
-    setIsEditOpen(false);
-  };
 
   return (
     <div className="p-4">
@@ -139,28 +133,35 @@ export default function ProductTable() {
           onClick={() => setIsOpen(true)}
           className="bg-gray-500 hover:bg-gray-700 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
         >
-          Agregar Producto <FaUserPlus />
+          Agregar Servicio <FaUserPlus />
         </button>
       </div>
 
-      <ProductForm isOpen={isOpen} onSubmit={handleAddProduct} onClose={() => setIsOpen(false)} />
-      <ConfirmActionv
+        <AddServiceModal isOpen={isOpen} onClose={() => setIsOpen(false)} onSubmit={addService}/>
+
+
+       <ConfirmActionv
         isOpen={isDeleteOpen}
         onConfirm={() => {
           if (selectedProductId !== null) {
-            handleDelete(selectedProductId); // Elimina el producto con el ID almacenado
-          }
-          setIsDeleteOpen(false); // Cierra el modal después de confirmar
+            deleteService(selectedProductId);
+          }          setIsDeleteOpen(false);
         }}
         onCancel={() => setIsDeleteOpen(false)}
-      />    
-        <EditProductModal 
-          isOpen={isEditOpen} 
-          product={editProductData ?? { id: 0, brand: "", name: "", unit: "", low_stock_alert: 0 }} 
-          onSubmit={handleEdit} 
-          onClose={() => setIsEditOpen(false)} 
-        /> 
-         <table className="min-w-full bg-white border border-gray-200">
+      /> 
+
+      <EditServiceModal
+        isOpen={isEditOpen}
+        service={editServiceData || {id: 0, description: "", estimated_time_hours: 0, estimated_time_minutes: 0, name: "", price: 0}}
+        onSubmit={(service) => {
+          console.log("Editando servicio con id: ", selectedProductId);
+          if (editServiceData !== null && editServiceData.id !== null) {
+            editService(editServiceData.id, service);
+          }
+        }}        onClose={() => setIsEditOpen(false)}
+      />
+
+      <table className="min-w-full bg-white border border-gray-200">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -168,10 +169,9 @@ export default function ProductTable() {
                 <th
                   key={header.id}
                   className="px-4 py-2 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  onClick={header.column.getToggleSortingHandler()} // Alternar ordenamiento
+                  onClick={header.column.getToggleSortingHandler()}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
-                  {/* Mostrar el ícono de ordenamiento */}
                   {{
                     asc: " 🔼",
                     desc: " 🔽",
@@ -207,8 +207,7 @@ export default function ProductTable() {
           Anterior
         </button>
         <span>
-         {table.getState().pagination.pageIndex + 1} De{" "}
-          {table.getPageCount()}
+          {table.getState().pagination.pageIndex + 1} De {table.getPageCount()}
         </span>
         <button
           onClick={() => table.nextPage()}

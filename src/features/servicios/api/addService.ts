@@ -1,14 +1,14 @@
 import axios from "axios";
-import { editProduct } from "../types/product";
+import { newService } from "../types/service";
 
-const API_EDIT_PRODUCT= '/api/v1/producto/';
+const API_ADD_SERVICE = '/api/v1/servicio';
 
-export const editProductAPI = async (id: number, product: editProduct): Promise<void> => {
+export const addServiceAPI = async (newService: newService): Promise<void> => {
     try {
         const token = localStorage.getItem('authToken');
-        await axios.put(
-            API_EDIT_PRODUCT+`${id}`,
-            product,
+        await axios.post(
+            API_ADD_SERVICE,
+            newService,
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -17,9 +17,9 @@ export const editProductAPI = async (id: number, product: editProduct): Promise<
             }
         );
     } catch (error) {
-        console.error("Error editing product:", error);
+        console.error("Error adding service:", error);
         if (axios.isAxiosError(error)) {
-            throw new Error(error.response?.data?.message || "Failed to edit product");
+            throw new Error(error.response?.data?.message || "Failed to add service");
         } else {
             throw new Error("An unexpected error occurred");
         }
