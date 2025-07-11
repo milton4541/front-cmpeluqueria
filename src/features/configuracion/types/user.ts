@@ -10,3 +10,11 @@ export type newUser = {
     role_id: number;
 };
 
+export type editUser = {
+    id: number;
+    password: string;
+    username: string;
+    role_id: number;
+    role_name: string;
+}
+

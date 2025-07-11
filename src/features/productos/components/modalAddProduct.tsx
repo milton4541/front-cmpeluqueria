@@ -53,7 +53,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ onSubmit, isOpen, onClose }) 
                             <input type="text" placeholder="Shampoo anti caspa" value={name} onChange={(e) => setName(e.target.value)} className="border p-2 w-full" required />
                         </div>
                         <div>
-                            <label className="block mb-2 text-sm font-medium">Stock Mínimo</label>
+                            <label className="block mb-2 text-sm font-medium">Alerta de Bajo Stock</label>
                             <input type="number" placeholder="10" value={lowStockAlert} onChange={(e) => setLowStockAlert(e.target.value)}   className="border p-2 w-full appearance-none" required />
                         </div>
                         <div>

@@ -19,7 +19,9 @@ export default function Layout() {
             <h1 className="text-2xl font-bold text-gray-900 mb-6">Salon Manager</h1>
             <nav className="space-y-4">
             <div>
+              <Link to="/inicio" className="flex items-center">
               <Options icon={<IoMdAdd size={24} color="black" />} label="Nuevo Turno" />              
+              </Link>
               <Link to="/clientes" className="flex items-center">
                 <Options icon={<MdPeopleAlt size={24} color="black" />} label="Clientes" />
               </Link>
